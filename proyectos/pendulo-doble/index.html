@@ -1,0 +1,842 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta
+    name="description"
+    content="Simulación interactiva de un péndulo doble ideal, su modelo lagrangiano, integración RK4 y sensibilidad a las condiciones iniciales."
+  >
+
+  <title>Simulación de un péndulo doble | Mai Folgueira</title>
+
+  <!-- Esta ruta supone: proyectos/pendulo-doble/index.html -->
+  <link rel="stylesheet" href="../../style.css">
+
+  <!--
+    MathJax permite escribir LaTeX dentro del HTML.
+
+    Fórmula en línea:
+      $E=T+V$
+
+    Fórmula centrada:
+      \[ E=T+V \]
+
+    MathJax necesita conexión a internet mientras se carga desde este CDN.
+  -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]}
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js"></script>
+</head>
+
+<body>
+  <div class="contenedor">
+    <header>
+      <p class="nombre-sitio">
+        <a href="../../index.html">Mai Folgueira</a>
+      </p>
+
+      <p class="subtitulo">archivo personal</p>
+
+      <nav aria-label="Navegación principal">
+        <a href="../../index.html">inicio</a>
+        <a href="../../archivo/index.html">archivo</a>
+        <a href="../index.html" aria-current="page">proyectos</a>
+        <a href="../../escritos/index.html">escritos</a>
+        <a href="../../galeria/index.html">galería</a>
+        <a href="../../sobre-mi/index.html">sobre mí</a>
+      </nav>
+    </header>
+
+    <main>
+      <p class="miga">
+        <a href="../index.html">proyectos</a> / simulación de un péndulo doble
+      </p>
+
+      <article class="entrada-completa">
+        <h1>Simulación de un péndulo doble</h1>
+
+        <p class="etiquetas">
+          <time datetime="2026-07-31">31.07.2026</time>
+          / física / caos / programación
+        </p>
+
+        <!-- Enlaces principales, colocados al comienzo de la entrada. -->
+        <p>
+          <a href="https://github.com/mailenfolgueira/pendulo-doble">
+            ver el proyecto en GitHub
+          </a>
+          /
+          <a href="https://mailenfolgueira.github.io/pendulo-doble/">
+            abrir la simulación
+          </a>
+        </p>
+
+        <p class="bajada">
+          Simulación web interactiva de un péndulo doble ideal desarrollada
+          para visualizar la sensibilidad a las condiciones iniciales y el
+          caos determinista.
+        </p>
+
+        <p>
+          La aplicación integra simultáneamente dos sistemas gobernados por
+          las mismas ecuaciones físicas. La única diferencia entre ellos es
+          una perturbación angular inicial muy pequeña:
+        </p>
+
+        <div class="ecuacion">
+          \[
+          \theta_{1,B}(0)=\theta_{1,A}(0)+\varepsilon.
+          \]
+        </div>
+
+        <p>
+          Aunque al principio ambos péndulos se mueven casi de la misma
+          manera, en configuraciones caóticas sus trayectorias terminan
+          separándose de forma notable. El modelo se obtiene mediante
+          mecánica lagrangiana, las ecuaciones de movimiento se resuelven en
+          forma matricial y el estado se integra numéricamente con el método
+          de Runge–Kutta de cuarto orden (RK4).
+        </p>
+
+<h2>Funciones de la aplicación</h2>
+<ul>
+<li>Dos péndulos dobles superpuestos.</li>
+<li>Perturbación inicial configurable desde valores muy pequeños.</li>
+<li>Integración numérica RK4 con paso físico fijo de $1/480\ \mathrm{s}$.</li>
+<li>Controles para los ángulos y las velocidades angulares iniciales.</li>
+<li>Masas, longitudes y gravedad configurables.</li>
+<li>Masas arrastrables con mouse o pantalla táctil mientras la simulación está pausada.</li>
+<li>Estelas de las masas finales.</li>
+<li>Gráfico de la separación entre ambos sistemas.</li>
+<li>Indicador del error numérico de la energía.</li>
+<li>Configuraciones predefinidas para movimiento caótico, suave o con giros.</li>
+<li>Generación aleatoria de condiciones iniciales.</li>
+<li>Control de velocidad de reproducción.</li>
+<li>Diseño adaptable a computadoras y celulares.</li>
+</ul>
+<h2>Modelo físico</h2>
+<h3>Supuestos</h3>
+<p>El sistema representado es un péndulo doble ideal formado por:</p>
+<ul>
+<li>dos masas puntuales $m_1$ y $m_2$;</li>
+<li>dos barras rígidas de longitudes $\ell_1$ y $\ell_2$;</li>
+<li>barras sin masa;</li>
+<li>movimiento restringido a un plano vertical;</li>
+<li>un punto de suspensión fijo;</li>
+<li>gravedad uniforme de módulo $g$;</li>
+<li>ausencia de rozamiento y resistencia del aire;</li>
+<li>ausencia de elasticidad, choques y deformaciones.</li>
+</ul>
+<p>Las coordenadas generalizadas elegidas son los dos ángulos:</p>
+<div class="ecuacion">\[
+q_1=\theta_1,
+\qquad
+q_2=\theta_2.
+\]</div>
+
+<p>Cada ángulo se mide desde la vertical dirigida hacia abajo. Por eso, la configuración</p>
+<div class="ecuacion">\[
+\theta_1=\theta_2=0
+\]</div>
+
+<p>corresponde a ambos brazos colgando verticalmente hacia abajo.</p>
+<p>Esta elección permite describir todo el sistema con solo dos grados de libertad. Las tensiones de las barras no aparecen explícitamente en las ecuaciones porque las restricciones geométricas ya están incorporadas en las coordenadas angulares.</p>
+<h3>Coordenadas y convención geométrica</h3>
+<p>El origen se ubica en el punto de suspensión. El eje $x$ es horizontal y el eje $y$ se toma positivo hacia abajo, igual que el eje vertical de un <code>canvas</code> HTML.</p>
+<h3>Primera masa</h3>
+<div class="ecuacion">\[
+x_1=\ell_1\sin\theta_1,
+\]</div>
+
+<div class="ecuacion">\[
+y_1=\ell_1\cos\theta_1.
+\]</div>
+
+<h3>Segunda masa</h3>
+<div class="ecuacion">\[
+x_2=\ell_1\sin\theta_1+\ell_2\sin\theta_2,
+\]</div>
+
+<div class="ecuacion">\[
+y_2=\ell_1\cos\theta_1+\ell_2\cos\theta_2.
+\]</div>
+
+<p>Estas ecuaciones garantizan automáticamente que las longitudes de las barras permanezcan constantes:</p>
+<div class="ecuacion">\[
+\sqrt{x_1^2+y_1^2}=\ell_1,
+\]</div>
+
+<div class="ecuacion">\[
+\sqrt{(x_2-x_1)^2+(y_2-y_1)^2}=\ell_2.
+\]</div>
+
+<p>En el programa, estas relaciones se implementan en la función <code>positions</code> de <code>js/physics.js</code>. También se usan para dibujar el péndulo, construir las estelas y medir la separación entre los extremos de las dos simulaciones.</p>
+<h3>Velocidades</h3>
+<p>Derivando las posiciones respecto del tiempo:</p>
+<div class="ecuacion">\[
+\dot{x}_1=\ell_1\cos\theta_1\,\dot{\theta}_1,
+\]</div>
+
+<div class="ecuacion">\[
+\dot{y}_1=-\ell_1\sin\theta_1\,\dot{\theta}_1.
+\]</div>
+
+<p>Para la segunda masa:</p>
+<div class="ecuacion">\[
+\dot{x}_2=
+\ell_1\cos\theta_1\,\dot{\theta}_1
++
+\ell_2\cos\theta_2\,\dot{\theta}_2,
+\]</div>
+
+<div class="ecuacion">\[
+\dot{y}_2=
+-\ell_1\sin\theta_1\,\dot{\theta}_1
+-
+\ell_2\sin\theta_2\,\dot{\theta}_2.
+\]</div>
+
+<p>De aquí se obtiene:</p>
+<div class="ecuacion">\[
+\dot{x}_1^2+\dot{y}_1^2
+=
+\ell_1^2\dot{\theta}_1^2,
+\]</div>
+
+<p>mientras que para la segunda masa:</p>
+<div class="ecuacion">\[
+\dot{x}_2^2+\dot{y}_2^2
+=
+\ell_1^2\dot{\theta}_1^2
++
+\ell_2^2\dot{\theta}_2^2
++
+2\ell_1\ell_2\dot{\theta}_1\dot{\theta}_2
+\cos(\theta_1-\theta_2).
+\]</div>
+
+<p>El término cruzado es una manifestación del acoplamiento entre ambos brazos.</p>
+<h3>Energía cinética</h3>
+<p>La energía cinética total es la suma de las energías cinéticas de las dos masas:</p>
+<div class="ecuacion">\[
+T=
+\frac{1}{2}m_1v_1^2+
+\frac{1}{2}m_2v_2^2.
+\]</div>
+
+<p>Sustituyendo las velocidades:</p>
+<div class="ecuacion">\[
+T=
+\frac{1}{2}(m_1+m_2)\ell_1^2\dot{\theta}_1^2
++
+\frac{1}{2}m_2\ell_2^2\dot{\theta}_2^2
++
+m_2\ell_1\ell_2
+\dot{\theta}_1\dot{\theta}_2
+\cos(\theta_1-\theta_2).
+\]</div>
+
+<p>El primer término contiene $m_1+m_2$ porque el movimiento del primer brazo desplaza a las dos masas.</p>
+<h3>Energía potencial</h3>
+<p>Como el eje $y$ apunta hacia abajo, la altura física medida hacia arriba es $-y$. Tomando como referencia de potencial el punto de suspensión:</p>
+<div class="ecuacion">\[
+V=-m_1gy_1-m_2gy_2.
+\]</div>
+
+<p>Al sustituir las posiciones:</p>
+<div class="ecuacion">\[
+V=
+-(m_1+m_2)g\ell_1\cos\theta_1
+-
+m_2g\ell_2\cos\theta_2.
+\]</div>
+
+<p>El valor absoluto de la energía potencial depende de la referencia elegida, pero las ecuaciones de movimiento solo dependen de sus derivadas. Sumar una constante a $V$ no modifica la dinámica.</p>
+<h3>Lagrangiano</h3>
+<p>El lagrangiano del sistema es:</p>
+<div class="ecuacion">\[
+L=T-V.
+\]</div>
+
+<p>Por lo tanto:</p>
+<div class="ecuacion">\[
+\begin{aligned}
+L={}&
+\frac{1}{2}(m_1+m_2)\ell_1^2\dot{\theta}_1^2
++
+\frac{1}{2}m_2\ell_2^2\dot{\theta}_2^2\\
+&+
+m_2\ell_1\ell_2
+\dot{\theta}_1\dot{\theta}_2
+\cos(\theta_1-\theta_2)\\
+&+
+(m_1+m_2)g\ell_1\cos\theta_1
++
+m_2g\ell_2\cos\theta_2.
+\end{aligned}
+\]</div>
+
+<h3>Ecuaciones de Euler-Lagrange</h3>
+<p>Para cada coordenada generalizada se aplica:</p>
+<div class="ecuacion">\[
+\frac{d}{dt}
+\left(
+\frac{\partial L}{\partial \dot{\theta}_i}
+\right)
+-
+\frac{\partial L}{\partial \theta_i}
+=0,
+\qquad i=1,2.
+\]</div>
+
+<p>Para abreviar, definimos:</p>
+<div class="ecuacion">\[
+\Delta=\theta_1-\theta_2.
+\]</div>
+
+<h3>Ecuación asociada a $\theta_1$</h3>
+<p>Al calcular las derivadas del lagrangiano y simplificar se obtiene:</p>
+<div class="ecuacion">\[
+(m_1+m_2)\ell_1^2\ddot{\theta}_1
++
+m_2\ell_1\ell_2\cos\Delta\,\ddot{\theta}_2
++
+m_2\ell_1\ell_2\sin\Delta\,\dot{\theta}_2^2
++
+(m_1+m_2)g\ell_1\sin\theta_1
+=0.
+\]</div>
+
+<h3>Ecuación asociada a $\theta_2$</h3>
+<p>La segunda ecuación es:</p>
+<div class="ecuacion">\[
+m_2\ell_1\ell_2\cos\Delta\,\ddot{\theta}_1
++
+m_2\ell_2^2\ddot{\theta}_2
+-
+m_2\ell_1\ell_2\sin\Delta\,\dot{\theta}_1^2
++
+m_2g\ell_2\sin\theta_2
+=0.
+\]</div>
+
+<p>Estas ecuaciones son:</p>
+<ul>
+<li>no lineales, por los senos, cosenos y velocidades al cuadrado;</li>
+<li>acopladas, porque cada aceleración depende del estado de ambos brazos;</li>
+<li>deterministas, porque un estado inicial dado determina una evolución concreta;</li>
+<li>capaces de presentar comportamiento caótico en determinadas regiones del espacio de estados.</li>
+</ul>
+<h3>Forma matricial usada por el programa</h3>
+<p>En lugar de codificar expresiones muy largas para $\ddot{\theta}_1$ y $\ddot{\theta}_2$, el programa reorganiza las ecuaciones de Euler-Lagrange como un sistema lineal en las aceleraciones:</p>
+<div class="ecuacion">\[
+M(q)\,\ddot{q}=b(q,\dot{q}),
+\]</div>
+
+<p>con:</p>
+<div class="ecuacion">\[
+\ddot{q}=
+\begin{pmatrix}
+\ddot{\theta}_1\\
+\ddot{\theta}_2
+\end{pmatrix}.
+\]</div>
+
+<p>La matriz de masas es:</p>
+<div class="ecuacion">\[
+M(q)=
+\begin{pmatrix}
+(m_1+m_2)\ell_1^2
+&
+m_2\ell_1\ell_2\cos\Delta
+\\
+m_2\ell_1\ell_2\cos\Delta
+&
+m_2\ell_2^2
+\end{pmatrix}.
+\]</div>
+
+<p>El vector del lado derecho es:</p>
+<div class="ecuacion">\[
+b(q,\dot{q})=
+\begin{pmatrix}
+b_1\\
+b_2
+\end{pmatrix},
+\]</div>
+
+<p>con:</p>
+<div class="ecuacion">\[
+b_1=
+-m_2\ell_1\ell_2\sin\Delta\,\dot{\theta}_2^2
+-
+(m_1+m_2)g\ell_1\sin\theta_1,
+\]</div>
+
+<div class="ecuacion">\[
+b_2=
+m_2\ell_1\ell_2\sin\Delta\,\dot{\theta}_1^2
+-
+m_2g\ell_2\sin\theta_2.
+\]</div>
+
+<p>Esta es <strong>la forma exacta implementada en <code>derivatives</code> dentro de <code>js/physics.js</code></strong>.</p>
+<p>En el código, los elementos de la matriz se llaman:</p>
+<pre><code class="language-js">const a11 = (m1 + m2) * l1 * l1;
+const a12 = m2 * l1 * l2 * cosDelta;
+const a22 = m2 * l2 * l2;
+</code></pre>
+<p>Como la matriz es simétrica, $a_{21}=a_{12}$ y no hace falta almacenarlo por separado.</p>
+<h3>Cálculo de las aceleraciones angulares</h3>
+<p>Para una matriz simétrica de tamaño $2\times2$:</p>
+<div class="ecuacion">\[
+\begin{pmatrix}
+a_{11} & a_{12}\\
+a_{12} & a_{22}
+\end{pmatrix}
+\begin{pmatrix}
+\alpha_1\\
+\alpha_2
+\end{pmatrix}
+=
+\begin{pmatrix}
+b_1\\
+b_2
+\end{pmatrix},
+\]</div>
+
+<p>con:</p>
+<div class="ecuacion">\[
+\alpha_1=\ddot{\theta}_1,
+\qquad
+\alpha_2=\ddot{\theta}_2,
+\]</div>
+
+<p>el determinante es:</p>
+<div class="ecuacion">\[
+D=a_{11}a_{22}-a_{12}^2.
+\]</div>
+
+<p>Las soluciones son:</p>
+<div class="ecuacion">\[
+\alpha_1=
+\frac{b_1a_{22}-a_{12}b_2}{D},
+\]</div>
+
+<div class="ecuacion">\[
+\alpha_2=
+\frac{a_{11}b_2-a_{12}b_1}{D}.
+\]</div>
+
+<p>Estas dos expresiones son las que el programa evalúa en cada llamada a <code>derivatives</code>:</p>
+<pre><code class="language-js">const determinant = a11 * a22 - a12 * a12;
+
+const alpha1 = (b1 * a22 - a12 * b2) / determinant;
+const alpha2 = (a11 * b2 - a12 * b1) / determinant;
+</code></pre>
+<p>El código también verifica que el determinante sea finito y suficientemente distinto de cero. Con masas y longitudes físicas estrictamente positivas, la matriz de masas es regular. De hecho:</p>
+<div class="ecuacion">\[
+D=
+m_2\ell_1^2\ell_2^2
+\left(m_1+m_2\sin^2\Delta\right)>0.
+\]</div>
+
+<p>La comprobación numérica sigue siendo útil para detectar parámetros inválidos o valores no finitos.</p>
+<h3>Sistema diferencial de primer orden</h3>
+<p>Los integradores numéricos trabajan naturalmente con sistemas de ecuaciones diferenciales de primer orden. Por eso se define el vector de estado:</p>
+<div class="ecuacion">\[
+Y=
+\begin{pmatrix}
+\theta_1\\
+\theta_2\\
+\omega_1\\
+\omega_2
+\end{pmatrix},
+\]</div>
+
+<p>con:</p>
+<div class="ecuacion">\[
+\omega_1=\dot{\theta}_1,
+\qquad
+\omega_2=\dot{\theta}_2.
+\]</div>
+
+<p>Su derivada es:</p>
+<div class="ecuacion">\[
+\dot{Y}=f(Y)=
+\begin{pmatrix}
+\omega_1\\
+\omega_2\\
+\alpha_1\\
+\alpha_2
+\end{pmatrix}.
+\]</div>
+
+<p>La función <code>derivatives(state, params)</code> recibe:</p>
+<pre><code class="language-text">state = [theta1, theta2, omega1, omega2]
+</code></pre>
+<p>y devuelve:</p>
+<pre><code class="language-text">[omega1, omega2, alpha1, alpha2]
+</code></pre>
+<p>Los ángulos se almacenan en radianes y las velocidades angulares en radianes por segundo. Los controles visuales de ángulo están expresados en grados y se convierten mediante <code>degreesToRadians</code>.</p>
+<h3>Integración numérica con RK4</h3>
+<p>El sistema no tiene, en general, una solución elemental cerrada que pueda evaluarse directamente para cualquier condición inicial. La aplicación obtiene la evolución aproximada integrando numéricamente:</p>
+<div class="ecuacion">\[
+\dot{Y}=f(Y).
+\]</div>
+
+<p>Se usa el método de <strong>Runge-Kutta clásico de cuarto orden</strong>, conocido como RK4.</p>
+<p>Para un estado $Y_n$ en el instante $t_n$ y un paso temporal $h$, se calculan cuatro pendientes:</p>
+<div class="ecuacion">\[
+k_1=f(Y_n),
+\]</div>
+
+<div class="ecuacion">\[
+k_2=f\left(Y_n+\frac{h}{2}k_1\right),
+\]</div>
+
+<div class="ecuacion">\[
+k_3=f\left(Y_n+\frac{h}{2}k_2\right),
+\]</div>
+
+<div class="ecuacion">\[
+k_4=f\left(Y_n+hk_3\right).
+\]</div>
+
+<p>Luego se actualiza el estado mediante:</p>
+<div class="ecuacion">\[
+Y_{n+1}=Y_n+
+\frac{h}{6}
+\left(k_1+2k_2+2k_3+k_4\right).
+\]</div>
+
+<p>La implementación se encuentra en <code>js/integrator.js</code>:</p>
+<pre><code class="language-js">export function rk4Step(state, dt, derivativeFunction, params) {
+  const k1 = derivativeFunction(state, params);
+  const k2 = derivativeFunction(addScaled(state, k1, dt / 2), params);
+  const k3 = derivativeFunction(addScaled(state, k2, dt / 2), params);
+  const k4 = derivativeFunction(addScaled(state, k3, dt), params);
+
+  return state.map(
+    (value, index) =&gt;
+      value +
+      (dt / 6) *
+        (k1[index] + 2 * k2[index] + 2 * k3[index] + k4[index]),
+  );
+}
+</code></pre>
+<p>RK4 tiene error local de orden $O(h^5)$ y error global acumulado de orden $O(h^4)$ bajo las hipótesis habituales de regularidad. No conserva la energía de manera exacta, porque no es un integrador simpléctico, pero con un paso suficientemente pequeño ofrece una precisión muy buena para esta visualización.</p>
+<p>No se utiliza el método de Euler porque, para el mismo paso temporal, produce errores mucho mayores y puede introducir crecimiento o pérdida artificial de energía. En un sistema sensible a las condiciones iniciales es especialmente importante evitar confundir inestabilidad numérica con comportamiento físico.</p>
+<h3>Paso temporal fijo y animación</h3>
+<p>El paso físico elegido es:</p>
+<div class="ecuacion">\[
+h=\frac{1}{480}\ \mathrm{s}.
+\]</div>
+
+<p>Este valor aparece en <code>js/main.js</code>:</p>
+<pre><code class="language-js">const FIXED_DT = 1 / 480;
+</code></pre>
+<p>La física no avanza una sola vez por fotograma. En cambio, el programa usa un <strong>acumulador temporal</strong>:</p>
+<ol>
+<li>mide cuánto tiempo real pasó desde el fotograma anterior;</li>
+<li>multiplica ese intervalo por la velocidad de reproducción seleccionada;</li>
+<li>agrega el resultado al acumulador;</li>
+<li>ejecuta pasos RK4 de duración fija mientras el acumulador sea mayor o igual que <code>FIXED_DT</code>;</li>
+<li>descuenta cada paso realizado del acumulador;</li>
+<li>dibuja el estado más reciente.</li>
+</ol>
+<p>La idea central puede escribirse así:</p>
+<pre><code class="language-text">acumulador += tiempo_real_transcurrido × velocidad
+
+mientras acumulador ≥ h:
+    estado = RK4(estado, h)
+    acumulador -= h
+
+dibujar(estado)
+</code></pre>
+<p>Este desacoplamiento evita que la trayectoria física dependa directamente de la frecuencia de refresco de la pantalla. Una computadora que renderiza a 60 Hz y otra que renderiza a 144 Hz integran el mismo sistema usando el mismo paso físico.</p>
+<p>La aplicación también:</p>
+<ul>
+<li>limita a <code>0.05 s</code> el tiempo real incorporado desde un único fotograma;</li>
+<li>permite como máximo 80 pasos físicos por fotograma;</li>
+<li>descarta el acumulador pendiente si se alcanza ese límite.</li>
+</ul>
+<p>Estas defensas evitan que una pestaña bloqueada, una pausa del navegador o un fotograma extremadamente lento produzcan un salto numérico descontrolado.</p>
+<h3>Comparación de los dos péndulos</h3>
+<p>El sistema principal comienza con:</p>
+<div class="ecuacion">\[
+Y_A(0)=
+\begin{pmatrix}
+\theta_1(0)\\
+\theta_2(0)\\
+\omega_1(0)\\
+\omega_2(0)
+\end{pmatrix}.
+\]</div>
+
+<p>El segundo sistema se inicializa con:</p>
+<div class="ecuacion">\[
+Y_B(0)=
+\begin{pmatrix}
+\theta_1(0)+\varepsilon\\
+\theta_2(0)\\
+\omega_1(0)\\
+\omega_2(0)
+\end{pmatrix}.
+\]</div>
+
+<p>Ambos usan exactamente:</p>
+<ul>
+<li>las mismas masas;</li>
+<li>las mismas longitudes;</li>
+<li>la misma gravedad;</li>
+<li>el mismo integrador;</li>
+<li>el mismo paso temporal;</li>
+<li>las mismas ecuaciones.</li>
+</ul>
+<p>La única diferencia es $\varepsilon$.</p>
+<p>La aplicación mide la distancia euclídea entre las masas finales:</p>
+<div class="ecuacion">\[
+d(t)=
+\sqrt{
+\left[x_{2,A}(t)-x_{2,B}(t)\right]^2
++
+\left[y_{2,A}(t)-y_{2,B}(t)\right]^2
+}.
+\]</div>
+
+<p>En el código, esta magnitud se calcula mediante <code>endpointSeparation</code>:</p>
+<pre><code class="language-js">return Math.hypot(a.x2 - b.x2, a.y2 - b.y2);
+</code></pre>
+<p>La separación se muestra como una métrica instantánea y también se guarda periódicamente para construir el gráfico $d(t)$.</p>
+<p>Una divergencia creciente ilustra sensibilidad a las condiciones iniciales, pero una única comparación visual no constituye por sí sola una medición rigurosa del exponente de Lyapunov. El objetivo de esta versión es didáctico y visual.</p>
+<h3>Conservación de la energía</h3>
+<p>Como el modelo no incluye rozamiento ni fuerzas externas dependientes del tiempo, la energía mecánica teórica debe conservarse:</p>
+<div class="ecuacion">\[
+E=T+V.
+\]</div>
+
+<p>La función <code>energy</code> de <code>js/physics.js</code> evalúa por separado:</p>
+<ul>
+<li><code>kinetic</code>: energía cinética $T$;</li>
+<li><code>potential</code>: energía potencial $V$;</li>
+<li><code>total</code>: energía mecánica $E$.</li>
+</ul>
+<p>La interfaz supervisa el sistema A y calcula una medida normalizada del error:</p>
+<div class="ecuacion">\[
+\text{error}=
+\frac{|E(t)-E(0)|}
+{\max\left(|E(0)|,E_{\mathrm{escala}},10^{-9}\right)},
+\]</div>
+
+<p>con la escala característica:</p>
+<div class="ecuacion">\[
+E_{\mathrm{escala}}
+=(m_1+m_2)g(\ell_1+\ell_2).
+\]</div>
+
+<p>Usar una escala adicional evita que el cociente se vuelva engañosamente grande cuando la energía inicial queda cerca de cero por la referencia elegida.</p>
+<p>La interfaz clasifica el resultado aproximadamente como:</p>
+<ul>
+<li>bueno si el error es menor que $10^{-5}$;</li>
+<li>advertencia entre $10^{-5}$ y $10^{-3}$;</li>
+<li>alto si supera $10^{-3}$.</li>
+</ul>
+<p>La conservación no es exacta porque RK4 introduce error de discretización. El indicador sirve para comprobar que la simulación continúa en un régimen numéricamente confiable.</p>
+<h3>Correspondencia entre teoría y código</h3>
+<table>
+<thead>
+<tr>
+  <th>Concepto físico o numérico</th>
+  <th>Ecuación o función</th>
+  <th>Archivo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Parámetros por defecto</td>
+  <td>$m_1=m_2=1$, $\ell_1=\ell_2=1$, $g=9.81$</td>
+  <td><code>js/physics.js</code> → <code>DEFAULT_PARAMS</code></td>
+</tr>
+<tr>
+  <td>Posiciones cartesianas</td>
+  <td>$x_1,y_1,x_2,y_2$</td>
+  <td><code>js/physics.js</code> → <code>positions</code></td>
+</tr>
+<tr>
+  <td>Matriz de masas</td>
+  <td>$M(q)$</td>
+  <td><code>js/physics.js</code> → <code>derivatives</code></td>
+</tr>
+<tr>
+  <td>Vector dinámico</td>
+  <td>$b(q,\dot q)$</td>
+  <td><code>js/physics.js</code> → <code>derivatives</code></td>
+</tr>
+<tr>
+  <td>Resolución del sistema $2\times2$</td>
+  <td>fórmulas para $\alpha_1$ y $\alpha_2$</td>
+  <td><code>js/physics.js</code> → <code>derivatives</code></td>
+</tr>
+<tr>
+  <td>Sistema de primer orden</td>
+  <td>$\dot Y=(\omega_1,\omega_2,\alpha_1,\alpha_2)$</td>
+  <td><code>js/physics.js</code> → <code>derivatives</code></td>
+</tr>
+<tr>
+  <td>Energías</td>
+  <td>$T$, $V$, $E=T+V$</td>
+  <td><code>js/physics.js</code> → <code>energy</code></td>
+</tr>
+<tr>
+  <td>Separación entre extremos</td>
+  <td>$d(t)$</td>
+  <td><code>js/physics.js</code> → <code>endpointSeparation</code></td>
+</tr>
+<tr>
+  <td>Conversión grados/radianes</td>
+  <td>$\theta_{\mathrm{rad}}=\theta_{\mathrm{deg}}\pi/180$</td>
+  <td><code>js/physics.js</code></td>
+</tr>
+<tr>
+  <td>Paso RK4</td>
+  <td>$Y_{n+1}$ a partir de $k_1,k_2,k_3,k_4$</td>
+  <td><code>js/integrator.js</code> → <code>rk4Step</code></td>
+</tr>
+<tr>
+  <td>Paso temporal fijo</td>
+  <td>$h=1/480\ \mathrm{s}$</td>
+  <td><code>js/main.js</code> → <code>FIXED_DT</code></td>
+</tr>
+<tr>
+  <td>Acumulador temporal</td>
+  <td>varios pasos físicos por fotograma</td>
+  <td><code>js/main.js</code> → <code>advancePhysics</code></td>
+</tr>
+<tr>
+  <td>Perturbación inicial</td>
+  <td>$\theta_{1,B}=\theta_{1,A}+\varepsilon$</td>
+  <td><code>js/main.js</code> → <code>resetSimulation</code></td>
+</tr>
+<tr>
+  <td>Muestreo de estelas</td>
+  <td>posición del extremo a 120 muestras/s</td>
+  <td><code>js/main.js</code> → <code>sampleVisualization</code></td>
+</tr>
+<tr>
+  <td>Muestreo del gráfico</td>
+  <td>separación a 30 muestras/s</td>
+  <td><code>js/main.js</code> → <code>sampleVisualization</code></td>
+</tr>
+<tr>
+  <td>Renderizado</td>
+  <td>barras, masas y trayectorias</td>
+  <td><code>js/renderer.js</code></td>
+</tr>
+<tr>
+  <td>Controles e interacción</td>
+  <td>sliders, botones y arrastre</td>
+  <td><code>js/main.js</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Parámetros iniciales</h3>
+<p>La configuración caótica predeterminada usa:</p>
+<div class="ecuacion">\[
+m_1=m_2=1\ \mathrm{kg},
+\]</div>
+
+<div class="ecuacion">\[
+\ell_1=\ell_2=1\ \mathrm{m},
+\]</div>
+
+<div class="ecuacion">\[
+g=9.81\ \mathrm{m/s^2},
+\]</div>
+
+<div class="ecuacion">\[
+\theta_1(0)=120^\circ,
+\]</div>
+
+<div class="ecuacion">\[
+\theta_2(0)=-10^\circ,
+\]</div>
+
+<div class="ecuacion">\[
+\omega_1(0)=\omega_2(0)=0,
+\]</div>
+
+<div class="ecuacion">\[
+\varepsilon=0.01^\circ.
+\]</div>
+
+<p>En JavaScript, los ángulos se convierten a radianes antes de iniciar la integración.</p>
+<h2>Sensibilidad a las condiciones iniciales y caos</h2>
+<p>El sistema es determinista: no se introducen números aleatorios durante la evolución y las mismas condiciones iniciales producen la misma trayectoria numérica bajo la misma configuración.</p>
+<p>Sin embargo, en ciertas regiones del espacio de estados, una diferencia inicial pequeña puede crecer rápidamente. De forma idealizada, durante algunos intervalos puede pensarse en una separación aproximada del tipo:</p>
+<div class="ecuacion">\[
+d(t)\sim d_0e^{\lambda t},
+\]</div>
+
+<p>donde $\lambda$ se relaciona con un exponente de Lyapunov.</p>
+<p>Esta aplicación no calcula todavía un exponente de Lyapunov formal. El gráfico de separación sirve como visualización intuitiva de la divergencia entre dos trayectorias cercanas.</p>
+<p>La sensibilidad no implica que las leyes sean aleatorias. Significa que una predicción a largo plazo requeriría conocer el estado inicial con una precisión cada vez mayor.</p>
+<h2>Alcance y limitaciones</h2>
+<p>Esta versión busca equilibrio entre claridad física, estabilidad numérica y valor visual. No pretende representar todos los efectos de un péndulo real.</p>
+<p>No incluye:</p>
+<ul>
+<li>masa distribuida en las barras;</li>
+<li>rozamiento en los ejes;</li>
+<li>resistencia del aire;</li>
+<li>elasticidad de las barras;</li>
+<li>choques entre masas o barras;</li>
+<li>movimiento tridimensional;</li>
+<li>excitación externa;</li>
+<li>control adaptativo del paso temporal;</li>
+<li>integración simpléctica;</li>
+<li>cálculo riguroso del exponente de Lyapunov;</li>
+<li>análisis completo del espacio de fases.</li>
+</ul>
+<p>Posibles extensiones:</p>
+<ul>
+<li>amortiguamiento configurable;</li>
+<li>péndulo forzado;</li>
+<li>comparación entre Euler, RK4 e integradores simplécticos;</li>
+<li>gráfico de energía cinética, potencial y total;</li>
+<li>sección de Poincaré;</li>
+<li>estimación numérica del máximo exponente de Lyapunov;</li>
+<li>exportación de datos a CSV;</li>
+<li>grabación automática de la animación;</li>
+<li>configuraciones compartibles mediante parámetros en la URL.</li>
+</ul>
+
+
+        <p class="enlaces-entrada">
+          <a href="https://github.com/mailenfolgueira/pendulo-doble">
+            ver el proyecto en GitHub
+          </a>
+          /
+          <a href="https://mailenfolgueira.github.io/pendulo-doble/">
+            abrir la simulación
+          </a>
+        </p>
+      </article>
+    </main>
+
+    <footer>
+      <p>
+        <a href="../index.html">volver a proyectos</a>
+        /
+        <a href="../../archivo/index.html">consultar el archivo</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>

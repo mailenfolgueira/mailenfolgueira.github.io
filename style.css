@@ -1,0 +1,306 @@
+@import url("https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap");
+
+:root {
+  --fondo: #f4f0e6;
+  --texto: #171717;
+  --texto-suave: #5b5b55;
+  --linea: #9a978f;
+  --enlace: #123c8c;
+  --ancho: 760px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: "Courier New", Courier, monospace;
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+body {
+  margin: 0;
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: "Courier Prime", "Courier New", Courier, monospace;
+  font-size: 18px;
+  line-height: 1.65;
+}
+
+.contenedor {
+  width: 100%;
+  max-width: var(--ancho);
+  margin: 0 auto;
+  padding: 3rem 0 4rem;
+}
+
+header {
+  margin-bottom: 2.5rem;
+}
+
+.nombre-sitio {
+  margin: 0;
+  font-size: 1.55rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.subtitulo {
+  margin: 0.2rem 0 1.2rem;
+  color: var(--texto-suave);
+}
+
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.7rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--linea);
+}
+
+nav a::after {
+  content: " /";
+  color: var(--texto-suave);
+  text-decoration: none;
+}
+
+nav a:last-child::after {
+  content: "";
+}
+
+main {
+  min-height: 50vh;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.3;
+}
+
+h1 {
+  margin: 0 0 1.5rem;
+  font-size: 1.4rem;
+}
+
+h2 {
+  margin: 2.5rem 0 1rem;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+}
+
+h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+p {
+  margin: 0 0 1rem;
+}
+
+a {
+  color: var(--enlace);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+a:hover,
+a:focus-visible {
+  color: var(--texto);
+  background: #ded9cd;
+}
+
+hr {
+  margin: 2.5rem 0;
+  border: 0;
+  border-top: 1px solid var(--linea);
+}
+
+.lista-entradas,
+.lista-simple {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.entrada {
+  display: grid;
+  grid-template-columns: 7.5rem 1fr;
+  gap: 0.75rem;
+  margin-bottom: 0.8rem;
+}
+
+.fecha {
+  color: var(--texto-suave);
+  white-space: nowrap;
+}
+
+.etiquetas {
+  color: var(--texto-suave);
+  font-size: 0.88rem;
+}
+
+.etiquetas a {
+  color: inherit;
+}
+
+.bloque {
+  margin-bottom: 2rem;
+}
+
+.ficha {
+  padding: 1rem 0;
+  border-top: 1px solid var(--linea);
+}
+
+.ficha:last-child {
+  border-bottom: 1px solid var(--linea);
+}
+
+.ficha p {
+  margin: 0.45rem 0 0;
+}
+
+.aviso {
+  padding-left: 1rem;
+  border-left: 3px solid var(--linea);
+  color: var(--texto-suave);
+}
+
+.galeria-lista {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.pieza {
+  padding: 1rem;
+  border: 1px solid var(--linea);
+}
+
+.pieza p {
+  margin: 0.5rem 0 0;
+}
+
+footer {
+  margin-top: 3rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--linea);
+  color: var(--texto-suave);
+  font-size: 0.88rem;
+}
+
+@media (max-width: 620px) {
+  html {
+    font-size: 16px;
+  }
+
+  .contenedor {
+    padding-top: 2rem;
+  }
+
+  .entrada {
+    display: block;
+    margin-bottom: 1.2rem;
+  }
+
+  .fecha {
+    display: block;
+    margin-bottom: 0.1rem;
+  }
+
+  .galeria-lista {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Enlaces de los títulos en los índices */
+.titulo-entrada {
+  color: var(--texto);
+  text-decoration: none;
+}
+
+.titulo-entrada:hover,
+.titulo-entrada:focus-visible {
+  color: var(--enlace);
+  background: transparent;
+  text-decoration: underline;
+}
+
+/* Páginas individuales */
+.miga {
+  margin-bottom: 2rem;
+  color: var(--texto-suave);
+  font-size: 0.88rem;
+}
+
+.entrada-completa h1 {
+  margin-bottom: 0.35rem;
+  font-size: 1.65rem;
+}
+
+.entrada-completa h2 {
+  margin-top: 2.4rem;
+}
+
+.bajada {
+  margin: 2rem 0;
+  font-size: 1.05rem;
+}
+
+.enlaces-entrada {
+  margin-top: 2.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--linea);
+}
+
+.entrada-completa h3 {
+  margin: 2rem 0 0.75rem;
+  font-size: 1rem;
+}
+
+.entrada-completa ul,
+.entrada-completa ol {
+  margin: 0 0 1rem;
+  padding-left: 1.6rem;
+}
+
+.entrada-completa pre {
+  margin: 1rem 0 1.5rem;
+  padding: 1rem;
+  overflow-x: auto;
+  border: 1px solid var(--linea);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.entrada-completa code {
+  font-family: "Courier New", Courier, monospace;
+}
+
+.entrada-completa table {
+  display: block;
+  width: 100%;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+}
+
+.entrada-completa th,
+.entrada-completa td {
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--linea);
+  text-align: left;
+  vertical-align: top;
+}
+
+.ecuacion,
+mjx-container[display="true"] {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}

@@ -1,0 +1,18 @@
+CONTENIDO DE LA CARPETA
+
+- index.html: reemplaza galeria/index.html
+- galeria.css: va dentro de galeria/
+- imagenes/: va dentro de galeria/
+
+Estructura final:
+
+galeria/
+├── index.html
+├── galeria.css
+└── imagenes/
+    ├── retrato-grafito.jpg
+    ├── astronomia-grafito.jpg
+    └── tiempo-espacio-grafito.jpg
+
+La página carga el estilo general desde ../style.css y agrega sus estilos propios.
+Al hacer clic en una obra, se abre en tamaño grande.

@@ -1,0 +1,164 @@
+/* =========================================================
+   GALERÍA
+   Este archivo está separado para no recargar el style.css
+   general del sitio.
+   ========================================================= */
+
+.gallery-page {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.gallery-intro {
+  max-width: 650px;
+  margin-bottom: 4rem;
+}
+
+.section-label {
+  margin: 0 0 0.75rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.62;
+}
+
+.gallery-intro h1 {
+  margin: 0 0 1.25rem;
+  font-size: clamp(2.6rem, 6vw, 5rem);
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+}
+
+.gallery-intro > p:last-child {
+  max-width: 56ch;
+  margin: 0;
+  line-height: 1.75;
+  opacity: 0.78;
+}
+
+.art-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 3.5rem 2rem;
+  align-items: start;
+}
+
+.artwork {
+  margin: 0;
+}
+
+.artwork-button {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: zoom-in;
+}
+
+.artwork-button img {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #e8e6e1;
+  filter: grayscale(100%);
+  transition: opacity 180ms ease, transform 220ms ease;
+}
+
+.artwork-button:hover img {
+  opacity: 0.88;
+  transform: translateY(-3px);
+}
+
+.artwork-button:focus-visible {
+  outline: 1px solid currentColor;
+  outline-offset: 5px;
+}
+
+.artwork figcaption {
+  padding-top: 1rem;
+  border-top: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+  margin-top: 1rem;
+}
+
+.artwork h2 {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.artwork p {
+  margin: 0;
+  font-size: 0.86rem;
+  opacity: 0.6;
+}
+
+/* Visor de imagen */
+.lightbox {
+  width: min(92vw, 1100px);
+  max-width: none;
+  max-height: 92vh;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #f4f1e9;
+  overflow: visible;
+}
+
+.lightbox::backdrop {
+  background: rgba(18, 18, 17, 0.93);
+  backdrop-filter: blur(3px);
+}
+
+.lightbox-image {
+  display: block;
+  max-width: 100%;
+  max-height: 82vh;
+  margin: 0 auto;
+  object-fit: contain;
+  box-shadow: 0 1.5rem 5rem rgba(0, 0, 0, 0.35);
+}
+
+.lightbox-title {
+  margin: 0.8rem 0 0;
+  text-align: center;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+}
+
+.lightbox-close {
+  position: fixed;
+  top: 1.25rem;
+  right: 1.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+@media (max-width: 850px) {
+
+  .gallery-intro {
+    margin-bottom: 3rem;
+  }
+
+  .art-grid {
+    grid-template-columns: 1fr;
+    gap: 3.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .artwork-button img {
+    transition: none;
+  }
+}

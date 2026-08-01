@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta
+    name="description"
+    content="Simulación interactiva de un péndulo doble ideal, su modelo lagrangiano, integración RK4 y sensibilidad a las condiciones iniciales."
+  >
+
+  <title>Simulación de un péndulo doble | Mai Folgueira</title>
+
+  <!-- Esta ruta supone: proyectos/pendulo-doble/index.html -->
+  <link rel="stylesheet" href="../../style.css">
+
+  <!--
+    MathJax permite escribir LaTeX dentro del HTML.
+
+    Fórmula en línea:
+      $E=T+V$
+
+    Fórmula centrada:
+      \[ E=T+V \]
+
+    MathJax necesita conexión a internet mientras se carga desde este CDN.
+  -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]}
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js"></script>
+</head>
+
+<body>
+  <div class="contenedor">
+    <header>
+      <p class="nombre-sitio">
+        <a href="../../index.html">Mai Folgueira</a>
+      </p>
+
+      <p class="subtitulo">archivo personal</p>
+
+      <nav aria-label="Navegación principal">
+        <a href="../../index.html">inicio</a>
+        <a href="../../archivo/index.html">archivo</a>
+        <a href="../index.html" aria-current="page">proyectos</a>
+        <a href="../../escritos/index.html">escritos</a>
+        <a href="../../galeria/index.html">galería</a>
+        <a href="../../sobre-mi/index.html">sobre mí</a>
+      </nav>
+    </header>
+
+    <main>
+      <p class="miga">
+        <a href="../index.html">proyectos</a> / simulación de un péndulo doble
+      </p>
+    <article>
+      <header>
+        <h1>Scriptorium</h1>
+
+        <p>
+          <time datetime="2026-07">julio de 2026</time>
+        </p>
+
+        <p>
+          <a
+            href="https://mailenfolgueira.github.io/Scriptorium/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            abrir Scriptorium
+          </a>
+          ·
+          <a
+            href="https://github.com/mailenfolgueira/Scriptorium"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            ver el código fuente
+          </a>
+        </p>
+      </header>
+
+      <hr>
+
+      <section>
+        <h2>Descripción</h2>
+
+        <p>
+          Scriptorium es una aplicación web que desarrollé como un espacio
+          personal de estudio. Reúne en una misma página distintas herramientas
+          para organizar el trabajo cotidiano, registrar el progreso y conservar
+          notas breves.
+        </p>
+
+        <p>
+          El proyecto busca recuperar la idea del escritorio de estudio como un
+          lugar delimitado y silencioso. En lugar de presentar las herramientas
+          como elementos aislados, todas forman parte de un mismo cuaderno
+          digital.
+        </p>
+      </section>
+
+      <section>
+        <h2>Funciones</h2>
+
+        <p>La aplicación incluye:</p>
+
+        <ul>
+          <li>un temporizador Pomodoro;</li>
+          <li>una lista de tareas;</li>
+          <li>un calendario;</li>
+          <li>un espacio para notas;</li>
+          <li>un diario de estudio;</li>
+          <li>estadísticas de las sesiones realizadas;</li>
+          <li>un registro cronológico de actividad.</li>
+        </ul>
+
+        <p>
+          La información se guarda localmente en el navegador. No es necesario
+          crear una cuenta ni conectarse a un servidor para utilizarla.
+        </p>
+      </section>
+
+      <section>
+        <h2>Diseño</h2>
+
+        <p>
+          El nombre del proyecto proviene de los espacios medievales dedicados
+          a la lectura, la copia y la conservación de manuscritos. Esa referencia
+          orientó tanto el nombre como la identidad visual de la aplicación.
+        </p>
+
+        <p>
+          La interfaz utiliza tonos oscuros, colores inspirados en el pergamino
+          y una tipografía de carácter editorial. El objetivo no fue reproducir
+          literalmente un escritorio antiguo, sino construir un ambiente sobrio
+          que acompañara la concentración.
+        </p>
+
+        <blockquote>
+          <p>
+            Un espacio de estudio no tiene que eliminar el paso del tiempo,
+            sino hacerlo visible.
+          </p>
+        </blockquote>
+      </section>
+
+      <section>
+        <h2>Implementación</h2>
+
+        <p>
+          Scriptorium está desarrollado como una aplicación web estática
+          utilizando HTML, CSS y JavaScript. No emplea frameworks ni una base
+          de datos externa.
+        </p>
+
+        <p>
+          Las distintas funciones están separadas en módulos de JavaScript para
+          facilitar el mantenimiento del proyecto. La persistencia de tareas,
+          notas, sesiones y registros se realiza mediante
+          <code>localStorage</code>.
+        </p>
+
+        <p>
+          También puede instalarse como una aplicación web progresiva. Para ello
+          incorpora un manifiesto y un service worker que permiten abrirla desde
+          el dispositivo como una aplicación independiente.
+        </p>
+      </section>
+
+      <section>
+        <h2>Tecnologías</h2>
+
+        <ul>
+          <li>HTML para la estructura;</li>
+          <li>CSS para el diseño y la adaptación a distintas pantallas;</li>
+          <li>JavaScript para la lógica de las herramientas;</li>
+          <li>localStorage para la persistencia de los datos;</li>
+          <li>service worker y web manifest para las funciones de PWA;</li>
+          <li>GitHub Pages para la publicación.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Estado del proyecto</h2>
+
+        <p>
+          El proyecto se encuentra operativo. Puede utilizarse directamente
+          desde el navegador y está pensado para seguir creciendo a medida que
+          aparezcan nuevas necesidades de estudio y organización.
+        </p>
+      </section>
+
+      <hr>
+
+      <nav aria-label="Navegación entre entradas">
+        <p>
+          <a href="../index.html">← volver a proyectos</a>
+        </p>
+      </nav>
+    </article>
+    </main>
+
+    <footer>
+      <p>
+        <a href="../index.html">volver a proyectos</a>
+        /
+        <a href="../../archivo/index.html">consultar el archivo</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>

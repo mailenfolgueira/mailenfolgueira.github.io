@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Galería personal de dibujos y pinturas.">
+  <title>Galería</title>
+
+  <!-- Estilos generales del sitio -->
+  <link rel="stylesheet" href="../style.css">
+  <!-- Estilos exclusivos de esta sección -->
+  <link rel="stylesheet" href="galeria.css">
+</head>
+<body>
+<div class="contenedor">
+  <header>
+    <p class="nombre-sitio">
+      <a href="../index.html">Mai Folgueira</a>
+    </p>
+
+    <p class="subtitulo">archivo personal</p>
+
+    <nav aria-label="Navegación principal">
+      <a href="../index.html">inicio</a>
+      <a href="../archivo/index.html">archivo</a>
+      <a href="../proyectos/index.html">proyectos</a>
+      <a href="../escritos/index.html">escritos</a>
+      <a href="index.html" aria-current="page">galería</a>
+      <a href="../sobre-mi/index.html">sobre mí</a>
+    </nav>
+  </header>
+
+  <main class="gallery-page">
+    <header class="gallery-intro">
+      <p class="section-label">Obra visual</p>
+      <h1>Galería</h1>
+      <p>
+      Mis dibujos y pinturas.
+      </p>
+    </header>
+
+    <section class="art-grid" aria-label="Dibujos en grafito">
+      <figure class="artwork">
+        <button
+          class="artwork-button"
+          type="button"
+          data-image="imagenes/autorretrato-grafito.jpg"
+          data-title="Autorretrato frente al espejo"
+          aria-label="Abrir Retrato en tamaño grande"
+        >
+          <img
+            src="imagenes/autorretrato-grafito.jpg"
+            loading="eager"
+            decoding="async"
+          >
+        </button>
+        <figcaption>
+          <h2>Autorretrato frente al espejo</h2>
+          <p>Grafito sobre papel</p>
+        </figcaption>
+      </figure>
+
+      <figure class="artwork">
+        <button
+          class="artwork-button"
+          type="button"
+          data-image="imagenes/urania.jpg"
+          data-title="Urania"
+          aria-label="Abrir en tamaño grande"
+        >
+          <img
+            src="imagenes/urania.jpg"
+            loading="lazy"
+            decoding="async"
+          >
+        </button>
+        <figcaption>
+          <h2>Urania</h2>
+          <p>Grafito sobre papel</p>
+        </figcaption>
+      </figure>
+
+      <figure class="artwork">
+        <button
+          class="artwork-button"
+          type="button"
+          data-image="imagenes/cono-de-luz.jpg"
+          data-title="Cono de luz"
+          aria-label="Abrir en tamaño grande"
+        >
+          <img
+            src="imagenes/cono-de-luz.jpg"
+            loading="lazy"
+            decoding="async"
+          >
+        </button>
+        <figcaption>
+          <h2>Cono de luz</h2>
+          <p>Grafito sobre papel</p>
+        </figcaption>
+      </figure>
+    </section>
+  </main>
+
+</div>
+
+<dialog class="lightbox" aria-labelledby="lightbox-title">
+  <button class="lightbox-close" type="button" aria-label="Cerrar imagen">×</button>
+  <img class="lightbox-image" src="" alt="">
+  <p class="lightbox-title" id="lightbox-title"></p>
+</dialog>
+
+<script>
+  const lightbox = document.querySelector('.lightbox');
+  const lightboxImage = document.querySelector('.lightbox-image');
+  const lightboxTitle = document.querySelector('.lightbox-title');
+  const closeButton = document.querySelector('.lightbox-close');
+
+  document.querySelectorAll('.artwork-button').forEach((button) => {
+    button.addEventListener('click', () => {
+      lightboxImage.src = button.dataset.image;
+      lightboxImage.alt = button.querySelector('img').alt;
+      lightboxTitle.textContent = button.dataset.title;
+      lightbox.showModal();
+    });
+  });
+
+  closeButton.addEventListener('click', () => lightbox.close());
+
+  lightbox.addEventListener('click', (event) => {
+    if (event.target === lightbox) {
+      lightbox.close();
+    }
+  });
+</script>
+</body>
+</html>
